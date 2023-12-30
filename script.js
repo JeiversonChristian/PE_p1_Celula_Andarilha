@@ -2,10 +2,10 @@ const  canvas = window.document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 class Celula {
-    constructor() {
+    constructor(x,y) {
         this.r = 50;
-        this.x_center = 0 + this.r;
-        this.y_center = 0 + this.r;
+        this.x_center = x + this.r;
+        this.y_center = y + this.r;
         this.v = 5;
         this.cor = 'blue';
     }
@@ -24,5 +24,11 @@ class Celula {
     }
 }
 
-const celula1 = new Celula();
+function gerar_n_aleatorio(min, max) {
+    return Math.floor(Math.random() * (max - min) + min);
+}
+
+let x = gerar_n_aleatorio(0,1900);
+let y = gerar_n_aleatorio(0,1500);
+const celula1 = new Celula(x,y);
 celula1.desenhar();
