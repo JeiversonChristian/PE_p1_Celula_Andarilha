@@ -1,0 +1,21 @@
+body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+#conteudo {
+    text-align: center;
+}
+
+h1 {
+    margin-top: 10px;
+}
+
+canvas {
+    border: 1px solid black;
+    max-width: 90%;
+    max-height: 80vh;
+}
