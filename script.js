@@ -2,12 +2,12 @@ const  canvas = window.document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 class Celula {
-    constructor(x,y) {
+    constructor(x,y, cor) {
         this.r = 50;
         this.x_center = x + this.r;
         this.y_center = y + this.r;
         this.v = 5;
-        this.cor = 'blue';
+        this.cor = cor;
     }
 
     andar() {
@@ -28,7 +28,33 @@ function gerar_n_aleatorio(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
 }
 
-let x = gerar_n_aleatorio(0,1900);
-let y = gerar_n_aleatorio(0,1500);
-const celula1 = new Celula(x,y);
-celula1.desenhar();
+function gerar_cor_aleatoria() {
+    const vermelho  = Math.floor(Math.random() * 256);
+    const verde  = Math.floor(Math.random() * 256);
+    const azul = Math.floor(Math.random() * 256);
+    const cor = `#${vermelho.toString(16)}${verde.toString(16)}${azul.toString(16)}`;
+    return cor;
+}
+
+let celulas = [];
+let x = 0;
+let y = 0;
+let cor = '';
+function gerar_celulas() {
+    for (let i = 0; i <= 4; i++) {
+        x = gerar_n_aleatorio(0,1900);
+        y = gerar_n_aleatorio(0,1500);
+        cor = gerar_cor_aleatoria();
+        const celula = new Celula(x,y,cor);
+        celulas.push(celula);
+    }
+}
+
+function desenhar_celulas() {
+    for (let i = 0; i <= 4; i++) {
+        celulas[i].desenhar();
+    }
+}
+
+gerar_celulas();
+desenhar_celulas();
