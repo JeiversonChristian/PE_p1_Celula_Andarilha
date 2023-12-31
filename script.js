@@ -53,6 +53,24 @@ class Celula {
     }
 }
 
+class Comida {
+    constructor(x,y) {
+        this.r = 10;
+        this.x_center = x + this.r;
+        this.y_center = y + this.r;
+        this.cor = 'green';
+        this.status = 0; //0: não comida | 1: comida
+    }
+
+    desenhar() {
+        ctx.beginPath();
+        ctx.arc(this.x_center,this.y_center,this.r,0,2*Math.PI)
+        ctx.fillStyle = this.cor;
+        ctx.fill();
+        ctx.closePath;
+    }
+}
+
 function gerar_n_aleatorio(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
 }
@@ -78,12 +96,33 @@ function gerar_celulas(n,g) {
     }
 }
 
+let comidas = [];
+function gerar_comidas() {
+    for (let i = 0; i <= 4; i++) {
+        let x = gerar_n_aleatorio(0,canvas_width - 100);
+        let y = gerar_n_aleatorio(0,canvas_height - 100);
+        const comida = new Comida(x,y);
+        comidas.push(comida); 
+    }
+}
+
 function desenhar_celulas(n) {
     /*for (let i = 0; i <= n; i++) {
         celulas[i].desenhar();
     }*/
-    ctx.clearRect(0, 0, canvas_width, canvas_height);
     celulas[0].desenhar();
+}
+
+function desenhar_comidas() {
+    for (let i = 0; i <= 4; i++) {
+        comidas[i].desenhar();
+    }
+}
+
+function desenhar_elementos() {
+    ctx.clearRect(0, 0, canvas_width, canvas_height);
+    desenhar_celulas(4);
+    desenhar_comidas();
 }
 
 function movimentar_celulas() {
@@ -157,7 +196,7 @@ function tirar_energia_celulas() {
 
 let mult_1000 = 1;
 function rodar_simulacao() {
-    desenhar_celulas(4);
+    desenhar_elementos();
     tempoFinal = performance.now();
     tempoTotal = tempoFinal - tempoInicial; //milissegundos
     if (tempoTotal >= mult_1000*1000) {
@@ -170,5 +209,6 @@ function rodar_simulacao() {
 }
 
 gerar_celulas(4,1);
+gerar_comidas();
 tempoInicial = performance.now();
 rodar_simulacao();
