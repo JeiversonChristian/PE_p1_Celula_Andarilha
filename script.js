@@ -18,6 +18,10 @@ class Celula {
         this.energia = 30;
         this.num_celula = num_celula;
         this.geracao_celula = geracao_celula;
+        this.entrada = 0; //vai ser a distância até a comida
+        this.peso = 0; // vai ser gerado aleatoriamente
+        this.bias = 0; // vai ser gerado aleatoriamente
+        this.saida_linear = 0; // vai ser igual a (entrada * peso) + bias;
     }
 
     andar_frente() {
@@ -87,6 +91,22 @@ function gerar_cor_aleatoria() {
 
 let celulas = [];
 
+function calcular_peso() {
+    if (celulas.length > 0) {
+        for (let i = 0; i <= 4; i++) {
+            celulas[0].peso = Math.random() * (2 * 0.01) - 0.01;
+        }
+    }
+}
+
+function calcular_bias() {
+    if (celulas.length > 0) {
+        for (let i = 0; i <= 4; i++) {
+            celulas[0].bias = Math.random() * (2 * 0.01) - 0.01;
+        }
+    }
+}
+
 function gerar_celulas(n,g) {
     for (let i = 0; i <= n; i++) {
         let x = gerar_n_aleatorio(0,canvas_width - 100);
@@ -95,6 +115,8 @@ function gerar_celulas(n,g) {
         let num_celula = i+1;
         let geracao_celula = g;
         const celula = new Celula(x,y,cor,num_celula,geracao_celula);
+        calcular_peso();
+        calcular_bias();
         celulas.push(celula);
     }
 }
@@ -128,9 +150,61 @@ function desenhar_elementos() {
     desenhar_comidas();
 }
 
+function calcular_distancia() {
+    if (celulas.length > 0) {
+        for(let i = 0; i <= comidas.length - 1; i++) {
+            // Obtém as coordenadas dos centros dos círculos
+            let x1 = comidas[i].x_center;
+            let y1 = comidas[i].y_center;
+            let x2 = celulas[0].x_center;
+            let y2 = celulas[0].y_center;
+
+            // Calcula a distância entre os centros dos círculos
+            let distanciaCentros = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+
+            celulas[0].entrada = distanciaCentros;
+        }
+    }
+}
+
+
+function calcular_saida_linear() {
+    if (celulas.length > 0) {
+        celulas[0].saida_linear = (celulas[0].entrada*celulas[0].peso)+celulas[0].bias;
+    }
+}
+
+function sigmoid(x) {
+    return 1 / (1 + Math.exp(-x));
+}
+
+function decidir(valorSigmoid) {
+    if (valorSigmoid >= 0.0 && valorSigmoid < 0.2) {
+        return 1;
+    } else if (valorSigmoid >= 0.2 && valorSigmoid < 0.4) {
+        return 2;
+    } else if (valorSigmoid >= 0.4 && valorSigmoid < 0.6) {
+        return 3;
+    } else if (valorSigmoid >= 0.6 && valorSigmoid < 0.8) {
+        return 4;
+    } else {
+        return 0;
+    }
+}
+
 function movimentar_celulas() {
     if (celulas.length > 0) {
-        let decisao = gerar_n_aleatorio(0,5);
+        calcular_distancia();
+        calcular_saida_linear();
+        let saidaLinear = celulas[0].saida_linear;
+        const valorSigmoid = sigmoid(saidaLinear);
+        const decisao = decidir(valorSigmoid);
+        //let decisao = gerar_n_aleatorio(0,5);
+        //alert(celulas[0].entrada);
+        //alert(celulas[0].peso);
+        //alert(celulas[0].bias);
+        //alert(celulas[0].saida_linear);
+        //alert(decisao);
         switch (decisao) {
             case 1:
                 celulas[0].andar_frente();
@@ -192,16 +266,16 @@ function detectar_colisoes() {
     if (celulas.length > 0) {
         for(let i = 0; i <= comidas.length - 1; i++) {
             // Obtém as coordenadas dos centros dos círculos
-            const x1 = comidas[i].x_center;
-            const y1 = comidas[i].y_center;
-            const x2 = celulas[0].x_center;
-            const y2 = celulas[0].y_center;
+            let x1 = comidas[i].x_center;
+            let y1 = comidas[i].y_center;
+            let x2 = celulas[0].x_center;
+            let y2 = celulas[0].y_center;
 
             // Calcula a distância entre os centros dos círculos
-            const distanciaCentros = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+            let distanciaCentros = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 
             // Soma dos raios dos círculos
-            const somaDosRaios = comidas[i].r + celulas[0].r;
+            let somaDosRaios = comidas[i].r + celulas[0].r;
 
             // Verifica se há colisão
             if (distanciaCentros <= somaDosRaios) {
