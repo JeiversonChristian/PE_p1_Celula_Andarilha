@@ -59,7 +59,6 @@ class Comida {
         this.x_center = x + this.r;
         this.y_center = y + this.r;
         this.cor = 'green';
-        this.status = 0; //0: não comida | 1: comida
     }
 
     desenhar() {
@@ -84,6 +83,7 @@ function gerar_cor_aleatoria() {
 }
 
 let celulas = [];
+
 function gerar_celulas(n,g) {
     for (let i = 0; i <= n; i++) {
         let x = gerar_n_aleatorio(0,canvas_width - 100);
@@ -97,8 +97,10 @@ function gerar_celulas(n,g) {
 }
 
 let comidas = [];
+
 function gerar_comidas() {
-    for (let i = 0; i <= 4; i++) {
+    let numero_comidas = gerar_n_aleatorio(0,3);
+    for (let i = 0; i <= numero_comidas; i++) {
         let x = gerar_n_aleatorio(0,canvas_width - 100);
         let y = gerar_n_aleatorio(0,canvas_height - 100);
         const comida = new Comida(x,y);
@@ -114,7 +116,7 @@ function desenhar_celulas(n) {
 }
 
 function desenhar_comidas() {
-    for (let i = 0; i <= 4; i++) {
+    for (let i = 0; i <= comidas.length - 1; i++) {
         comidas[i].desenhar();
     }
 }
@@ -194,7 +196,37 @@ function tirar_energia_celulas() {
     celulas[0].energia -= 1;
 }
 
+function dar_energia_celula() {
+    celulas[0].energia += 10;
+}
+
+function detectar_colisoes() {
+    for(let i = 0; i <= comidas.length - 1; i++) {
+        // Obtém as coordenadas dos centros dos círculos
+        const x1 = comidas[i].x_center;
+        const y1 = comidas[i].y_center;
+        const x2 = celulas[0].x_center;
+        const y2 = celulas[0].y_center;
+
+        // Calcula a distância entre os centros dos círculos
+        const distanciaCentros = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+
+        // Soma dos raios dos círculos
+        const somaDosRaios = comidas[i].r + celulas[0].r;
+
+        // Verifica se há colisão
+        if (distanciaCentros <= somaDosRaios) {
+            // Colisão detectada
+            // remover a comida da lista e dar energia pra célula
+            comidas.splice(i, 1);
+            dar_energia_celula();
+        }
+    }
+
+}
+
 let mult_1000 = 1;
+
 function rodar_simulacao() {
     desenhar_elementos();
     tempoFinal = performance.now();
@@ -203,8 +235,9 @@ function rodar_simulacao() {
         tirar_energia_celulas();
         mult_1000++;
     }
-    atualizar_info();
     movimentar_celulas();
+    detectar_colisoes();
+    atualizar_info();
     requestAnimationFrame(rodar_simulacao);
 }
 
