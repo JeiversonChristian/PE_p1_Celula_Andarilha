@@ -111,10 +111,9 @@ function gerar_comidas() {
 }
 
 function desenhar_celulas(n) {
-    /*for (let i = 0; i <= n; i++) {
-        celulas[i].desenhar();
-    }*/
-    celulas[0].desenhar();
+    if (celulas.length > 0) {
+        celulas[0].desenhar();
+    }
 }
 
 function desenhar_comidas() {
@@ -130,44 +129,24 @@ function desenhar_elementos() {
 }
 
 function movimentar_celulas() {
-    /*for (let i = 0; i <= 4; i++) {
+    if (celulas.length > 0) {
         let decisao = gerar_n_aleatorio(0,5);
-        //alert(decisao);
         switch (decisao) {
             case 1:
-                celulas[i].andar_frente();
+                celulas[0].andar_frente();
                 break;
             case 2:
-                celulas[i].andar_tras();
+                celulas[0].andar_tras();
                 break;
             case 3:
-                celulas[i].andar_cima();
+                celulas[0].andar_cima();
                 break;
             case 4:
-                celulas[i].andar_baixo();
+                celulas[0].andar_baixo();
                 break;
             default: // case 0, fique parado
                 break;      
         }
-    }*/
-
-    let decisao = gerar_n_aleatorio(0,5);
-        //alert(decisao);
-    switch (decisao) {
-        case 1:
-            celulas[0].andar_frente();
-            break;
-        case 2:
-            celulas[0].andar_tras();
-            break;
-        case 3:
-            celulas[0].andar_cima();
-            break;
-        case 4:
-            celulas[0].andar_baixo();
-            break;
-        default: // case 0, fique parado
-            break;      
     }
 }
 
@@ -187,15 +166,22 @@ function atualizar_info() {
     let segundos = ((tempoTotal % (60 * 1000)) / 1000).toFixed(0)
     ctxInfo.fillText(`${segundos} segundos`, 1425, 100);
 
-    ctxInfo.fillText(`Energia da célula:`, 20, 200);
-    ctxInfo.fillText(`${celulas[0].energia}`, 880, 200);
+    if (celulas.length > 0) {
+        ctxInfo.fillText(`Energia da célula:`, 20, 200);
+        ctxInfo.fillText(`${celulas[0].energia}`, 880, 200);
 
-    ctxInfo.fillText(`Número | Geração:`, 20, 300);
-    ctxInfo.fillText(`${celulas[0].num_celula} | ${celulas[0].geracao_celula}`, 880, 300);
+        ctxInfo.fillText(`Número | Geração:`, 20, 300);
+        ctxInfo.fillText(`${celulas[0].num_celula} | ${celulas[0].geracao_celula}`, 880, 300);
+    }
 }
 
 function tirar_energia_celulas() {
-    celulas[0].energia -= 1;
+    if (celulas.length > 0) {
+        celulas[0].energia -= 1;
+        if (celulas[0].energia == 0) {
+            celulas.splice(0,1);
+        }
+    }
 }
 
 function dar_energia_celula() {
@@ -203,28 +189,29 @@ function dar_energia_celula() {
 }
 
 function detectar_colisoes() {
-    for(let i = 0; i <= comidas.length - 1; i++) {
-        // Obtém as coordenadas dos centros dos círculos
-        const x1 = comidas[i].x_center;
-        const y1 = comidas[i].y_center;
-        const x2 = celulas[0].x_center;
-        const y2 = celulas[0].y_center;
+    if (celulas.length > 0) {
+        for(let i = 0; i <= comidas.length - 1; i++) {
+            // Obtém as coordenadas dos centros dos círculos
+            const x1 = comidas[i].x_center;
+            const y1 = comidas[i].y_center;
+            const x2 = celulas[0].x_center;
+            const y2 = celulas[0].y_center;
 
-        // Calcula a distância entre os centros dos círculos
-        const distanciaCentros = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+            // Calcula a distância entre os centros dos círculos
+            const distanciaCentros = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 
-        // Soma dos raios dos círculos
-        const somaDosRaios = comidas[i].r + celulas[0].r;
+            // Soma dos raios dos círculos
+            const somaDosRaios = comidas[i].r + celulas[0].r;
 
-        // Verifica se há colisão
-        if (distanciaCentros <= somaDosRaios) {
-            // Colisão detectada
-            // remover a comida da lista e dar energia pra célula
-            comidas.splice(i, 1);
-            dar_energia_celula();
+            // Verifica se há colisão
+            if (distanciaCentros <= somaDosRaios) {
+                // Colisão detectada
+                // remover a comida da lista e dar energia pra célula
+                comidas.splice(i, 1);
+                dar_energia_celula();
+            }
         }
     }
-
 }
 
 let mult_1000 = 1;
