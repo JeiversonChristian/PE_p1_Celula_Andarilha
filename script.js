@@ -18,8 +18,10 @@ class Celula {
         this.energia = 30;
         this.num_celula = num_celula;
         this.geracao_celula = geracao_celula;
-        this.entrada = 0; //vai ser a distância até a comida
-        this.peso = 0; // vai ser gerado aleatoriamente
+        this.entrada1 = 0; //vai ser a distância até a comida
+        this.entrada2 = 0;
+        this.peso1 = 0; // vai ser gerado aleatoriamente
+        this.peso2 = 0;
         this.bias = 0; // vai ser gerado aleatoriamente
         this.saida_linear = 0; // vai ser igual a (entrada * peso) + bias;
     }
@@ -94,7 +96,8 @@ let celulas = [];
 function calcular_peso() {
     if (celulas.length > 0) {
         for (let i = 0; i <= 4; i++) {
-            celulas[0].peso = Math.random() * (2 * 0.01) - 0.01;
+            celulas[0].peso1 = Math.random() * (2 * 0.01) - 0.01;
+            celulas[0].peso2 = Math.random() * (2 * 0.01) - 0.01;
         }
     }
 }
@@ -162,15 +165,23 @@ function calcular_distancia() {
             // Calcula a distância entre os centros dos círculos
             let distanciaCentros = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
 
-            celulas[0].entrada = distanciaCentros;
+            return distanciaCentros;
+            
         }
     }
+}
+
+function calcular_entradas() {
+    celulas[0].entrada1 = calcular_distancia();
+    celulas[0].entrada2 = celulas[0].energia;
 }
 
 
 function calcular_saida_linear() {
     if (celulas.length > 0) {
-        celulas[0].saida_linear = (celulas[0].entrada*celulas[0].peso)+celulas[0].bias;
+        celulas[0].saida_linear = (celulas[0].entrada1*celulas[0].peso1);
+        celulas[0].saida_linear += (celulas[0].entrada2*celulas[0].peso2);
+        celulas[0].saida_linear += celulas[0].bias;
     }
 }
 
@@ -194,7 +205,7 @@ function decidir(valorSigmoid) {
 
 function movimentar_celulas() {
     if (celulas.length > 0) {
-        calcular_distancia();
+        calcular_entradas();
         calcular_saida_linear();
         let saidaLinear = celulas[0].saida_linear;
         const valorSigmoid = sigmoid(saidaLinear);
@@ -254,6 +265,8 @@ function tirar_energia_celulas() {
         celulas[0].energia -= 1;
         if (celulas[0].energia == 0) {
             celulas.splice(0,1);
+            comidas.splice(0,1); // para resetar a comida
+            //tempoInicial = performance.now(); // reseta o tempo
         }
     }
 }
