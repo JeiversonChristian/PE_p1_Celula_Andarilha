@@ -99,8 +99,7 @@ function gerar_celulas(n,g) {
 let comidas = [];
 
 function gerar_comidas() {
-    let numero_comidas = gerar_n_aleatorio(0,3);
-    for (let i = 0; i <= numero_comidas; i++) {
+    for (let i = 0; i <= 0; i++) {
         let x = gerar_n_aleatorio(0,canvas_width - 100);
         let y = gerar_n_aleatorio(0,canvas_height - 100);
         const comida = new Comida(x,y);
@@ -237,6 +236,9 @@ function rodar_simulacao() {
     }
     movimentar_celulas();
     detectar_colisoes();
+    if (comidas.length == 0) {
+        gerar_comidas();
+    }
     atualizar_info();
     requestAnimationFrame(rodar_simulacao);
 }
