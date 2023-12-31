@@ -49,6 +49,9 @@ class Celula {
         ctx.arc(this.x_center,this.y_center,this.r,0,2*Math.PI)
         ctx.fillStyle = this.cor;
         ctx.fill();
+        ctx.strokeStyle = "black";
+        ctx.lineWidth = 5;
+        ctx.stroke();
         ctx.closePath;
     }
 }
