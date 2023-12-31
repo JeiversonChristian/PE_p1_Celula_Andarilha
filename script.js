@@ -15,6 +15,7 @@ class Celula {
         this.y_center = y + this.r;
         this.v = 50;
         this.cor = cor;
+        this.energia = 30;
     }
 
     andar_frente() {
@@ -131,18 +132,30 @@ function atualizar_info() {
     ctxInfo.font = "100px Arial";
     ctxInfo.fillStyle = "black";
     ctxInfo.textAlign = "left";
+
     ctxInfo.fillText(`Tempo decorrido:`, 20, 100);
     let minutos = Math.floor(tempoTotal / (60 * 1000))
     ctxInfo.fillText(`${minutos} minutos`, 880, 100);
     let segundos = ((tempoTotal % (60 * 1000)) / 1000).toFixed(0)
     ctxInfo.fillText(`${segundos} segundos`, 1425, 100);
+
+    ctxInfo.fillText(`Energia da Célula:`, 20, 200);
+    ctxInfo.fillText(`${celulas[0].energia}`, 880, 200);
 }
 
+function tirar_energia_celulas() {
+    celulas[0].energia -= 1;
+}
 
+let mult_1000 = 1;
 function rodar_simulacao() {
     desenhar_celulas(4);
     tempoFinal = performance.now();
     tempoTotal = tempoFinal - tempoInicial; //milissegundos
+    if (tempoTotal >= mult_1000*1000) {
+        tirar_energia_celulas();
+        mult_1000++;
+    }
     atualizar_info();
     movimentar_celulas();
     requestAnimationFrame(rodar_simulacao);
