@@ -6,16 +6,18 @@ const canvas_height = 1000;
 let canvasInfo = window.document.getElementById("canvas_infos");
 let ctxInfo = canvasInfo.getContext("2d");
 const canvasInfo_width = 4000;
-const canvasInfo_height = 300;
+const canvasInfo_height = 400;
 
 class Celula {
-    constructor(x,y, cor) {
+    constructor(x,y,cor,num_celula,geracao_celula) {
         this.r = 50;
         this.x_center = x + this.r;
         this.y_center = y + this.r;
         this.v = 50;
         this.cor = cor;
         this.energia = 30;
+        this.num_celula = num_celula;
+        this.geracao_celula = geracao_celula;
     }
 
     andar_frente() {
@@ -64,12 +66,14 @@ function gerar_cor_aleatoria() {
 }
 
 let celulas = [];
-function gerar_celulas(n) {
+function gerar_celulas(n,g) {
     for (let i = 0; i <= n; i++) {
         let x = gerar_n_aleatorio(0,canvas_width - 100);
         let y = gerar_n_aleatorio(0,canvas_height - 100);
         let cor = gerar_cor_aleatoria();
-        const celula = new Celula(x,y,cor);
+        let num_celula = i+1;
+        let geracao_celula = g;
+        const celula = new Celula(x,y,cor,num_celula,geracao_celula);
         celulas.push(celula);
     }
 }
@@ -127,9 +131,10 @@ function movimentar_celulas() {
 let tempoInicial = 0;
 let tempoFinal = 0;
 let tempoTotal = 0;
+
 function atualizar_info() {
     ctxInfo.clearRect(0, 0, canvasInfo_width, canvasInfo_height);
-    ctxInfo.font = "100px Arial";
+    ctxInfo.font = "80px Arial";
     ctxInfo.fillStyle = "black";
     ctxInfo.textAlign = "left";
 
@@ -139,8 +144,11 @@ function atualizar_info() {
     let segundos = ((tempoTotal % (60 * 1000)) / 1000).toFixed(0)
     ctxInfo.fillText(`${segundos} segundos`, 1425, 100);
 
-    ctxInfo.fillText(`Energia da Célula:`, 20, 200);
+    ctxInfo.fillText(`Energia da célula:`, 20, 200);
     ctxInfo.fillText(`${celulas[0].energia}`, 880, 200);
+
+    ctxInfo.fillText(`Número | Geração:`, 20, 300);
+    ctxInfo.fillText(`${celulas[0].num_celula} | ${celulas[0].geracao_celula}`, 880, 300);
 }
 
 function tirar_energia_celulas() {
@@ -161,6 +169,6 @@ function rodar_simulacao() {
     requestAnimationFrame(rodar_simulacao);
 }
 
-gerar_celulas(4);
+gerar_celulas(4,1);
 tempoInicial = performance.now();
 rodar_simulacao();
