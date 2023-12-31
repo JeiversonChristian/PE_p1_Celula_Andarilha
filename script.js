@@ -77,6 +77,7 @@ function desenhar_celulas(n) {
     /*for (let i = 0; i <= n; i++) {
         celulas[i].desenhar();
     }*/
+    ctx.clearRect(0, 0, canvas_width, canvas_height);
     celulas[0].desenhar();
 }
 
@@ -122,22 +123,31 @@ function movimentar_celulas() {
     }
 }
 
+let tempoInicial = 0;
+let tempoFinal = 0;
+let tempoTotal = 0;
 function atualizar_info() {
     ctxInfo.clearRect(0, 0, canvasInfo_width, canvasInfo_height);
     ctxInfo.font = "100px Arial";
     ctxInfo.fillStyle = "black";
-    ctxInfo.textAlign = "center";
-    ctxInfo.fillText(`teste`, 2000, 150);
+    ctxInfo.textAlign = "left";
+    ctxInfo.fillText(`Tempo decorrido:`, 20, 100);
+    let minutos = Math.floor(tempoTotal / (60 * 1000))
+    ctxInfo.fillText(`${minutos} minutos`, 880, 100);
+    let segundos = ((tempoTotal % (60 * 1000)) / 1000).toFixed(0)
+    ctxInfo.fillText(`${segundos} segundos`, 1425, 100);
 }
 
 
 function rodar_simulacao() {
-    ctx.clearRect(0, 0, canvas_width, canvas_height);
     desenhar_celulas(4);
+    tempoFinal = performance.now();
+    tempoTotal = tempoFinal - tempoInicial; //milissegundos
     atualizar_info();
     movimentar_celulas();
     requestAnimationFrame(rodar_simulacao);
 }
 
 gerar_celulas(4);
+tempoInicial = performance.now();
 rodar_simulacao();
