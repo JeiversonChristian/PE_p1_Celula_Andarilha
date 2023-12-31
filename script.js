@@ -1,7 +1,12 @@
 const  canvas = window.document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-const canvas_width = 2000;
-const canvas_height = 1600;
+const canvas_width = 4000;
+const canvas_height = 1000;
+
+let canvasInfo = window.document.getElementById("canvas_infos");
+let ctxInfo = canvasInfo.getContext("2d");
+const canvasInfo_width = 4000;
+const canvasInfo_height = 300;
 
 class Celula {
     constructor(x,y, cor) {
@@ -69,13 +74,14 @@ function gerar_celulas(n) {
 }
 
 function desenhar_celulas(n) {
-    for (let i = 0; i <= n; i++) {
+    /*for (let i = 0; i <= n; i++) {
         celulas[i].desenhar();
-    }
+    }*/
+    celulas[0].desenhar();
 }
 
 function movimentar_celulas() {
-    for (let i = 0; i <= 4; i++) {
+    /*for (let i = 0; i <= 4; i++) {
         let decisao = gerar_n_aleatorio(0,5);
         //alert(decisao);
         switch (decisao) {
@@ -94,12 +100,41 @@ function movimentar_celulas() {
             default: // case 0, fique parado
                 break;      
         }
+    }*/
+
+    let decisao = gerar_n_aleatorio(0,5);
+        //alert(decisao);
+    switch (decisao) {
+        case 1:
+            celulas[0].andar_frente();
+            break;
+        case 2:
+            celulas[0].andar_tras();
+            break;
+        case 3:
+            celulas[0].andar_cima();
+            break;
+        case 4:
+            celulas[0].andar_baixo();
+            break;
+        default: // case 0, fique parado
+            break;      
     }
 }
+
+function atualizar_info() {
+    ctxInfo.clearRect(0, 0, canvasInfo_width, canvasInfo_height);
+    ctxInfo.font = "100px Arial";
+    ctxInfo.fillStyle = "black";
+    ctxInfo.textAlign = "center";
+    ctxInfo.fillText(`teste`, 2000, 150);
+}
+
 
 function rodar_simulacao() {
     ctx.clearRect(0, 0, canvas_width, canvas_height);
     desenhar_celulas(4);
+    atualizar_info();
     movimentar_celulas();
     requestAnimationFrame(rodar_simulacao);
 }
