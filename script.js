@@ -24,6 +24,8 @@ class Celula {
         this.peso2 = 0;
         this.bias = 0; // vai ser gerado aleatoriamente
         this.saida_linear = 0; // vai ser igual a (entrada * peso) + bias;
+        this.pontos = 0;
+        this.distancia_comida = canvas_width - 0.01;
     }
 
     andar_frente() {
@@ -203,19 +205,25 @@ function decidir(valorSigmoid) {
     }
 }
 
+let menor_distancia = canvas_width;
+function calcular_pontos_aproximacao() {
+    if (celulas.length > 0) {
+        celulas[0].distancia_comida = calcular_distancia();
+        if (celulas[0].distancia_comida < menor_distancia) {
+            menor_distancia = celulas[0].distancia_comida;
+            celulas[0].pontos += 0.01;
+        } 
+    }
+}
+
 function movimentar_celulas() {
     if (celulas.length > 0) {
         calcular_entradas();
+        calcular_pontos_aproximacao();
         calcular_saida_linear();
         let saidaLinear = celulas[0].saida_linear;
         const valorSigmoid = sigmoid(saidaLinear);
         const decisao = decidir(valorSigmoid);
-        //let decisao = gerar_n_aleatorio(0,5);
-        //alert(celulas[0].entrada);
-        //alert(celulas[0].peso);
-        //alert(celulas[0].bias);
-        //alert(celulas[0].saida_linear);
-        //alert(decisao);
         switch (decisao) {
             case 1:
                 celulas[0].andar_frente();
@@ -252,8 +260,11 @@ function atualizar_info() {
     ctxInfo.fillText(`${segundos} segundos`, 1425, 100);
 
     if (celulas.length > 0) {
-        ctxInfo.fillText(`Energia da célula:`, 20, 200);
+        ctxInfo.fillText(`Vida da célula:`, 20, 200);
         ctxInfo.fillText(`${celulas[0].energia}`, 880, 200);
+
+        ctxInfo.fillText(`Pontos da célula:`, 1425, 200);
+        ctxInfo.fillText(`${celulas[0].pontos}`, 2100, 200);
 
         ctxInfo.fillText(`Número | Geração:`, 20, 300);
         ctxInfo.fillText(`${celulas[0].num_celula} | ${celulas[0].geracao_celula}`, 880, 300);
@@ -293,9 +304,10 @@ function detectar_colisoes() {
             // Verifica se há colisão
             if (distanciaCentros <= somaDosRaios) {
                 // Colisão detectada
-                // remover a comida da lista e dar energia pra célula
+                // remover a comida da lista e dar energia e pontos pra célula
                 comidas.splice(i, 1);
                 dar_energia_celula();
+                celulas[0].pontos += 10;
             }
         }
     }
