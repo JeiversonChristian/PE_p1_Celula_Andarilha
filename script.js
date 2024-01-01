@@ -15,7 +15,7 @@ class Celula {
         this.y_center = y + this.r;
         this.v = 50;
         this.cor = cor;
-        this.energia = 30;
+        this.energia = 10;
         this.num_celula = num_celula;
         this.geracao_celula = geracao_celula;
         this.entrada1 = 0; //vai ser a distância até a comida
@@ -96,11 +96,20 @@ function gerar_cor_aleatoria() {
 let celulas = [];
 let melhor_celula = [];
 
-function calcular_peso() {
+function calcular_peso(g) {
     if (celulas.length > 0) {
-        for (let i = 0; i <= 4; i++) {
-            celulas[0].peso1 = Math.random() * (2 * 0.01) - 0.01;
-            celulas[0].peso2 = Math.random() * (2 * 0.01) - 0.01;
+        if (g == 1) {
+            for (let i = 0; i <= 4; i++) {
+                celulas[0].peso1 = Math.random() * (2 * 0.01) - 0.01;
+                celulas[0].peso2 = Math.random() * (2 * 0.01) - 0.01;
+            }
+        } else if (g > 1) {
+            for (let i = 0; i <= 4; i++) {
+                if (i > 0){
+                    celulas[0].peso1 = melhor_celula[0].peso1 + Math.random() * (2 * 0.001) - 0.001;
+                    celulas[0].peso2 = melhor_celula[0].peso2 + Math.random() * (2 * 0.001) - 0.001;
+                }
+            }
         }
     }
 }
@@ -114,6 +123,12 @@ function calcular_bias() {
 }
 
 function gerar_celulas(n,g) {
+    if (g >= 2) {
+        celulas.push(melhor_celula[0]);
+        celulas[0].energia = 10;
+        celulas[0].pontos = 0;
+        celulas[0].distancia_comida = canvas_width - 0.01;         
+    }
     for (let i = 0; i <= n; i++) {
         let x = gerar_n_aleatorio(0,canvas_width - 100);
         let y = gerar_n_aleatorio(0,canvas_height - 100);
@@ -121,12 +136,14 @@ function gerar_celulas(n,g) {
         let num_celula = i+1;
         let geracao_celula = g;
         const celula = new Celula(x,y,cor,num_celula,geracao_celula);
-        calcular_peso();
+        calcular_peso(g);
         calcular_bias();
         celulas.push(celula);
     }
     let melhor = celulas[0];
-    melhor_celula.push(melhor);
+    if (g == 1) {
+        melhor_celula.push(melhor);
+    }
 }
 
 let comidas = [];
@@ -147,14 +164,14 @@ function desenhar_celulas(n) {
 }
 
 function desenhar_comidas() {
-    for (let i = 0; i <= comidas.length - 1; i++) {
+    for (let i = 0; i <= comidas.length-1; i++) {
         comidas[i].desenhar();
     }
 }
 
 function desenhar_elementos() {
     ctx.clearRect(0, 0, canvas_width, canvas_height);
-    desenhar_celulas(4);
+    desenhar_celulas(celulas.length-1);
     desenhar_comidas();
 }
 
@@ -302,6 +319,10 @@ function tirar_energia_celulas() {
             celulas.splice(0,1); // tirar a célula
             comidas.splice(0,1); // para resetar a comida
             //tempoInicial = performance.now(); // reseta o tempo
+            if (celulas.length == 0) {
+                num_geracao_atual++;
+                gerar_celulas(3, num_geracao_atual);
+            }
         }
     }
 }
@@ -356,7 +377,8 @@ function rodar_simulacao() {
     requestAnimationFrame(rodar_simulacao);
 }
 
-gerar_celulas(4,1);
+let num_geracao_atual = 1; 
+gerar_celulas(4,num_geracao_atual);
 gerar_comidas();
 tempoInicial = performance.now();
 rodar_simulacao();
