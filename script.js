@@ -94,6 +94,7 @@ function gerar_cor_aleatoria() {
 }
 
 let celulas = [];
+let melhor_celula = [];
 
 function calcular_peso() {
     if (celulas.length > 0) {
@@ -124,6 +125,8 @@ function gerar_celulas(n,g) {
         calcular_bias();
         celulas.push(celula);
     }
+    let melhor = celulas[0];
+    melhor_celula.push(melhor);
 }
 
 let comidas = [];
@@ -264,10 +267,30 @@ function atualizar_info() {
         ctxInfo.fillText(`${celulas[0].energia}`, 880, 200);
 
         ctxInfo.fillText(`Pontos da célula:`, 1425, 200);
-        ctxInfo.fillText(`${celulas[0].pontos}`, 2100, 200);
+        ctxInfo.fillText(`${celulas[0].pontos.toFixed(2)}`, 2100, 200);
 
         ctxInfo.fillText(`Número | Geração:`, 20, 300);
         ctxInfo.fillText(`${celulas[0].num_celula} | ${celulas[0].geracao_celula}`, 880, 300);
+    }
+
+    ctxInfo.fillText(`Melhor célula:`, 2400, 100);
+    ctxInfo.fillText(`Pontos: ${melhor_celula[0].pontos.toFixed(2)}`, 2400, 200);
+
+    ctxInfo.fillText(`Número | Geração:`, 2400, 300);
+    ctxInfo.fillText(`${melhor_celula[0].num_celula} | ${melhor_celula[0].geracao_celula}`, 3100, 300);
+
+
+}
+
+let melhor_pontuacao = 0;
+
+function verificar_melhor_geracao() {
+    if (celulas.length > 0) {
+        if (celulas[0].pontos >= melhor_pontuacao) {
+            melhor_pontuacao = celulas[0].pontos;
+            melhor_celula.splice(0,1); 
+            melhor_celula.push(celulas[0]);
+        }
     }
 }
 
@@ -275,7 +298,8 @@ function tirar_energia_celulas() {
     if (celulas.length > 0) {
         celulas[0].energia -= 1;
         if (celulas[0].energia == 0) {
-            celulas.splice(0,1);
+            verificar_melhor_geracao();
+            celulas.splice(0,1); // tirar a célula
             comidas.splice(0,1); // para resetar a comida
             //tempoInicial = performance.now(); // reseta o tempo
         }
