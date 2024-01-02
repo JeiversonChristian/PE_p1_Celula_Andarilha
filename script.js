@@ -15,7 +15,7 @@ class Celula {
         this.y_center = y + this.r;
         this.v = 50;
         this.cor = cor;
-        this.energia = 10;
+        this.energia = 5;
         this.num_celula = num_celula;
         this.geracao_celula = geracao_celula;
         this.entrada1 = 0; //vai ser a distância até a comida
